@@ -1,0 +1,2 @@
+Restaurant.Collection.LocationTransfers = new Mongo.Collection("restaurant_locationTransfers");
+Restaurant.Collection.LocationTransferDetails = new Mongo.Collection("restaurant_locationTransferDetails");

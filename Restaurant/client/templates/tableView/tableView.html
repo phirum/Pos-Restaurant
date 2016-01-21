@@ -1,0 +1,27 @@
+<template name="restaurant_tableView">
+    <div style="background-color: yellow;">
+
+
+    </div>
+
+
+    <ul id="myTabs" class="nav nav-tabs" role="tablist">
+        {{#each tableLocations}}
+            <li role="presentation">
+                <a href="#{{_id}}" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">
+                    {{name}}
+                </a>
+            </li>
+        {{/each}}
+
+    </ul>
+    <div id="myTabContent" class="tab-content">
+        {{#each tableLocations}}
+            <div role="tabpanel" class="tab-pane fade in active" id="{{_id}}" aria-labelledby="home-tab">
+                {{#each tables}}
+                  {{> restaurant_showTable}}
+                {{/each}}
+            </div>
+        {{/each}}
+    </div>
+</template>
