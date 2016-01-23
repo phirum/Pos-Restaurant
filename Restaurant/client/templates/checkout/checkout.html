@@ -61,7 +61,11 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><b>Product List</b></h3>
+                        <span class="panel-title"><b>Product List</b>
+                            <input type="text" class="la-box pull-right" id="sale-id"
+                                   value="{{sale._id}}" readonly/></span>
+
+
                     </div>
                     <div class="panel-body">
                         <div class="row">
@@ -124,28 +128,122 @@
                                 </tr>
                                 </thead>
                                 <tbody class="align-center" id="product-list">
-                                <tr data-id="{{_id}}">
 
-                                    <td align="left">
-                                        Coca(small)
-                                    </td>
-                                    <td>12,000</td>
-                                    <td>10</td>
-                                    <td>5</td>
-                                    <td class="total-amount">120,000</td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm" role="group" aria-label="">
-                                            <a href="" class="btn btn-warning btn-imei">-</a>
-                                            <a href="" class="btn btn-primary btn-imei">+</a>
-                                            <a href="" class="btn btn-danger btn-remove"><i
-                                                    class="fa fa-trash"></i></a>
-                                        </div>
-                                        <!--<a href="" class="btn btn-xs btn-danger btn-remove"><i
-                                                class="fa fa-trash"></i></a>-->
-                                    </td>
-                                </tr>
+                                {{#each saleDetails}}
+                                    <tr data-id="{{_id}}">
+                                        <td align="left">
+                                            {{_product.name}}({{_product._unit.name}})
+                                        </td>
+                                        <td>{{price}}</td>
+                                        <td>{{quantity}}</td>
+                                        <td>{{discount}}</td>
+                                        <td class="total-amount">{{amount}}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="">
+                                                <a href="" class="btn btn-warning btn-imei">-</a>
+                                                <a href="" class="btn btn-primary btn-imei">+</a>
+                                                <a href="" class="btn btn-danger btn-remove"><i
+                                                        class="fa fa-trash"></i></a>
+                                            </div>
+                                            <!--<a href="" class="btn btn-xs btn-danger btn-remove"><i
+                                                    class="fa fa-trash"></i></a>-->
+                                        </td>
+                                    </tr>
+                                {{/each}}
                                 </tbody>
                             </table>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form class="form-horizontal">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="total_riel" class="col-sm-5 control-label">Sub
+                                                        Total {{baseCurrency._id}}</label>
+
+                                                    <div class="col-sm-7">
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text"
+                                                                   class="form-control subtotal_riel input-sm"
+                                                                   id="subtotal_usd"
+                                                                   value="{{sale.subTotalFormatted}}" readonly>
+                                                            <span class="input-group-addon"><b>{{baseCurrency.symbol}}</b></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="total_discount"
+                                                           class="col-sm-5 control-label">Discount</label>
+
+                                                    <div class="col-sm-7">
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control validation input-sm"
+                                                                   id="total_discount"
+                                                                   value="{{sale.discount}}">
+                                                            <span class="input-group-addon"><b>%</b></span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <!-- <div class="form-group">
+                                                    <label for="total_discount_amount"
+                                                           class="col-sm-5 control-label">Discount</label>
+
+                                                    <div class="col-sm-7">
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control validation input-sm"
+                                                                   id="total_discount_amount"
+                                                                   value="{{sale.discountAmount}}">
+                                                            <span class="input-group-addon"><b>{{baseCurrency.symbol}}</b></span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>-->
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="total_usd"
+                                                           class="col-sm-5 control-label">Total {{baseCurrency._id}}</label>
+
+                                                    <div class="col-sm-7">
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" class="form-control input-sm"
+                                                                   id="total_usd"
+                                                                   value="{{sale.totalFormatted}}"
+                                                                   readonly>
+                                                            <span class="input-group-addon"><b>{{baseCurrency.symbol}}</b></span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                {{#if hasTotal sale.total}}
+                                                    {{#each exchangeRates.rates}}
+                                                        <div class="form-group">
+                                                            <label for="total_riel"
+                                                                   class="col-sm-5 control-label">Total {{toCurrencyId}}</label>
+
+                                                            <div class="col-sm-7">
+                                                                <div class="input-group input-group-sm">
+                                                                    <input type="text" class="form-control input-sm"
+                                                                           value="{{multiply rate sale.total toCurrencyId}}"
+                                                                           readonly>
+                                                                    <span class="input-group-addon"><b>{{getFileOfCurrency toCurrencyId "symbol"}}</b></span>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                    {{/each}}
+                                                {{/if}}
+
+
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
                         </div>
 
 

@@ -17,7 +17,7 @@
     </ul>
     <div id="myTabContent" class="tab-content">
         {{#each tableLocations}}
-            <div role="tabpanel" class="tab-pane fade in active" id="{{_id}}" aria-labelledby="home-tab">
+            <div role="tabpanel" class="tab-pane fade in active drag-obj-container"  id="{{_id}}" aria-labelledby="home-tab">
                 {{#each tables}}
                   {{> restaurant_showTable}}
                 {{/each}}
