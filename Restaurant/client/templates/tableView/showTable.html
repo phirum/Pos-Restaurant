@@ -1,16 +1,20 @@
 <template name="restaurant_showTable">
 
-    <div id="{{_id}}" class="drag-obj" style="background:#0086b3;position:absolute;left:{{left}}px;top:{{top}}px;width:200px;" >
+    <div id="{{_id}}" class="drag-obj"
+         style="background:#0086b3;position:absolute;left:{{left}}px;top:{{top}}px;width:200px;">
         <div class="handle-drag">
             {{name}}
+            <button type="button" class="pull-right btn btn-lg btn-danger" data-toggle="popover"
+                    title="Popover title"
+                    data-content="And here's some amazing content. It's very engaging. Right?">
+                <i class="fa fa-plus"></i></button>
         </div>
     </div>
-
     <!--<button id="{{_id}}" class="btn btn-default btn-drag" style="position:absolute;left:{{left}}px;top:{{top}}px;width:200px;">
        <div class="handle-drag">{{name}}</div>
     </button>-->
 
- <!--   <div id="{{_id}}" class="modal">
+    <!--   <div id="{{_id}}" class="modal">
         <div class="modal-header">
             {{name}}
         </div>
@@ -25,7 +29,7 @@
 
     <!-- Button trigger modal -->
 
-   <!-- <div class="modal fade" id="{{_id}}" style="position:absolute;left:{{left}}px;top:{{top}}px;width:200px;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <!-- <div class="modal fade" id="{{_id}}" style="position:absolute;left:{{left}}px;top:{{top}}px;width:200px;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">

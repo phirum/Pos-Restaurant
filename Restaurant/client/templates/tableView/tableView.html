@@ -7,21 +7,25 @@
 
     <ul id="myTabs" class="nav nav-tabs" role="tablist">
         {{#each tableLocations}}
-            <li role="presentation">
+            <li role="presentation" class="tableLocation-name">
                 <a href="#{{_id}}" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">
                     {{name}}
                 </a>
             </li>
         {{/each}}
-
     </ul>
-    <div id="myTabContent" class="tab-content">
+    <!--   <div id="myTabContent" class="tab-content">
         {{#each tableLocations}}
             <div role="tabpanel" class="tab-pane fade in active drag-obj-container"  id="{{_id}}" aria-labelledby="home-tab">
-                {{#each tables}}
-                  {{> restaurant_showTable}}
-                {{/each}}
+               ### #each tables here ###
             </div>
+        {{/each}}
+    </div>-->
+
+    <div id="drag-obj-container" class="row drag-obj-container">
+
+        {{#each tables}}
+            {{> restaurant_showTable}}
         {{/each}}
     </div>
 </template>

@@ -6,13 +6,14 @@ restaurantShowTableTPL.onRendered(function () {
     $('.drag-obj').draggable({
         cursor: "crosshair",
         containment: ".drag-obj-container",
-        handle: '.handle-drag',
+        handle: '.drag-obj',
         stop: function (evt, ui) {
             var left = ui.position.left;
             var top = ui.position.top;
             Restaurant.Collection.Tables.update($(this).attr('id'), {$set: {left: left, top: top}});
         }
     });
+    $('[data-toggle="popover"]').popover();
 });
 
 restaurantShowTableTPL.events({});
