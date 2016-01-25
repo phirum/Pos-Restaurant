@@ -1,7 +1,7 @@
 <template name="restaurant_checkout">
     <div class="wrap-content" style="padding: 5px;">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title"><b>Sale</b></h3>
@@ -58,24 +58,25 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <span class="panel-title"><b>Product List</b>
-                            <div class="dropdown">
-                                <button class="btn btn-default dropdown-toggle btn-sm" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                   <i class="fa fa-undo"></i> Resume Invoice
+                            <!--<div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle btn-sm" type="button" id="dropdownMenu1"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <i class="fa fa-undo"></i> Resume Invoice
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                     {{#each sales}}
-                                        <!--onclick="Session.set('hasUpdate', false);"-->
+                                        &lt;!&ndash;onclick="Session.set('hasUpdate', false);"&ndash;&gt;
                                         <li><a href="/restaurant/checkout/{{_id}}" class="resume"
                                                data-id="{{_id}}">{{_customer.name}}
                                             | {{_id}}</a></li>
                                     {{/each}}
                                 </ul>
-                            </div>
+                            </div>-->
                             <input type="text" class="la-box pull-right" id="sale-id"
                                    value="{{sale._id}}" readonly/></span>
 
@@ -136,7 +137,7 @@
                                     <th>Item</th>
                                     <th class="align-center">Price</th>
                                     <th class="align-center">Qty</th>
-                                    <th class="align-center">Dis</th>
+                                    <!--<th class="align-center">Dis</th>-->
                                     <th class="align-center">Amount</th>
                                     <th class="align-center">&nbsp;&nbsp;Action&nbsp;&nbsp;</th>
                                 </tr>
@@ -150,14 +151,18 @@
                                         </td>
                                         <td>{{price}}</td>
                                         <td>{{quantity}}</td>
-                                        <td>{{discount}}</td>
+                                        <!--<td>{{discount}}</td>-->
                                         <td class="total-amount">{{amount}}</td>
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group" aria-label="">
-                                                <a href="" class="btn btn-warning btn-imei">-</a>
-                                                <a href="" class="btn btn-primary btn-imei">+</a>
-                                                <a href="" class="btn btn-danger btn-remove"><i
-                                                        class="fa fa-trash"></i></a>
+                                                {{#if compareTwoValue quantity 1}}
+                                                    <button class="btn btn-warning btn-minus" disabled>-</button>
+                                                {{else}}
+                                                    <button href="" class="btn btn-warning btn-minus">-</button>
+                                                {{/if}}
+                                                <button class="btn btn-primary btn-plus">+</button>
+                                                <button class="btn btn-danger btn-remove"><i
+                                                        class="fa fa-trash"></i></button>
                                             </div>
                                             <!--<a href="" class="btn btn-xs btn-danger btn-remove"><i
                                                     class="fa fa-trash"></i></a>-->
@@ -333,19 +338,19 @@
                 <div class="pull-right">
 
                     <div class="btn-group dropup">
-                    <button type="button" class="btn btn-primary dropdown-toggle"
-                            data-toggle="dropdown"><i class="fa fa-undo"></i>&nbsp;Resume<span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        {{#each sales}}
-                            <!--onclick="Session.set('hasUpdate', false);"-->
-                            <li><a href="/restaurant/checkout/{{_id}}" class="resume"
-                                   data-id="{{_id}}">{{_customer.name}}
-                                | {{_id}}</a></li>
-                        {{/each}}
+                        <button type="button" class="btn btn-primary dropdown-toggle"
+                                data-toggle="dropdown"><i class="fa fa-undo"></i>&nbsp;Resume<span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            {{#each sales}}
+                                <!--onclick="Session.set('hasUpdate', false);"-->
+                                <li><a href="/restaurant/checkout/{{_id}}" class="resume"
+                                       data-id="{{_id}}">{{_customer.name}}
+                                    | {{_id}}</a></li>
+                            {{/each}}
 
-                    </ul>
-                </div>
+                        </ul>
+                    </div>
                     <button type="button" id="suspend" class="btn btn-info"><i class="fa fa-archive"></i>&nbsp;Suspend
                     </button>
                     <a href="/restaurant/checkout/print/{{sale._id}}" id="btn-print" class="btn hidden btn-primary"

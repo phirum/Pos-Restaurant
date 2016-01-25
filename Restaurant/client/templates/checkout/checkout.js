@@ -164,7 +164,7 @@ Template.restaurant_checkout.events({
                         }
                     });
                     FlowRouter.go('restaurant.checkout');
-                  // prepareForm();
+                    // prepareForm();
                 },
                 title: "Cancel Sale."
             });
@@ -180,58 +180,38 @@ Template.restaurant_checkout.events({
         FlowRouter.go('restaurant.checkout');
         //prepareForm();
     },
-    /*'change .r': function (e) {
-        var val = $(e.currentTarget).val();
-        var numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
-        var self = this;
-
-        var firstQuantity = self.quantity;
-        var quantity = parseInt($(e.currentTarget).val() == "" ? 0 : $(e.currentTarget).val());
-        if (!numericReg.test(val) || quantity <= 0) {
-            $(e.currentTarget).val(firstQuantity);
-            $(e.currentTarget).focus();
-            return;
-        }
-        if (self.imei.count() > quantity) {
-            alertify.warning("Quantity can't be less than number of IMEI.");
-            $(e.currentTarget).val(firstQuantity);
-            return;
-        }
-
-
-
-    },
-    'change .discount': function (e) {
-        var val = $(e.currentTarget).val();
-        var numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
-
-        var firstDiscount = this.discount;
-        var discount = parseFloat($(e.currentTarget).val());
-        if (!numericReg.test(val) || discount < 0 || discount > 100 || $(e.currentTarget).val() == "") {
-            $(e.currentTarget).val(firstDiscount);
-            $(e.currentTarget).focus();
-            return;
-        }
+    'click .btn-minus': function (e) {
+        var quantity = this.quantity - 1;
         var set = {};
-        set.discount = discount;
-        set.amount = (this.price * this.quantity) * (1 - discount / 100);
-        Meteor.call('updateSaleDetails', this._id, set, function (error, result) {
-            if (error) alertify.error(error.message);
+        set.quantity = quantity;
+        set.amount = (this.price * set.quantity) * (1 - this.discount / 100);
+        Meteor.call('directUpdateSaleDetails', this._id, set, function (er, re) {
+            if (er) alertify.error(err.message);
         });
-        // updateSaleSubTotal(FlowRouter.getParam('saleId'));
+    },
+    'click .btn-plus': function (e) {
+        var quantity = this.quantity + 1;
+        var set = {};
+        set.quantity = quantity;
+        set.amount = (this.price * set.quantity) * (1 - this.discount / 100);
+        Meteor.call('directUpdateSaleDetails', this._id, set, function (er, re) {
+            if (er) alertify.error(err.message);
+        });
     },
     'click .btn-remove': function () {
         Restaurant.Collection.SaleDetails.remove(this._id);
-        var sd = Restaurant.Collection.SaleDetails.find({saleId: FlowRouter.getParam('saleId'), isPromotion: {$ne: true}});
+        var sd = Restaurant.Collection.SaleDetails.find({
+            saleId: FlowRouter.getParam('saleId')
+        });
         if (sd.count() == 0) {
             Restaurant.Collection.Sales.remove(FlowRouter.getParam('saleId'));
             FlowRouter.go('restaurant.checkout');
-           // prepareForm();
+            // prepareForm();
         }
-        /!*else {
+        /*else {
          updateSaleSubTotal(FlowRouter.getParam('saleId'));
-         }*!/
-    }*/
+         }*/
+    }
 });
 
 Template.restaurant_showProduct.events({
@@ -455,83 +435,83 @@ function prepareForm() {
     }, 200);
 }
 /*
-function checkoutStock(self, oldQty, newQty, e) {
-    var saleId = $('#sale-id').val();
-    var branchId = Session.get('currentBranch');
-    var sdId = self._id;
-    var locationId = $('#location-id').val();
-    var set = {};
-    set.quantity = newQty;
-    set.amount = (self.price * newQty) * (1 - self.discount / 100);
-    //var product = Pos.Collection.Products.findOne(productId);
-    Meteor.call('findOneRecord', 'Pos.Collection.Products', {_id: self.productId}, {}, function (error, product) {
-        if (product) {
-            if (product.productType == "Stock") {
-                //---Open Inventory type block "FIFO Inventory"---
-                Meteor.call('findOneRecord', 'Pos.Collection.FIFOInventory', {
-                    branchId: branchId,
-                    productId: product._id,
-                    locationId: locationId
-                }, {sort: {createdAt: -1}}, function (error, inventory) {
-                    if (inventory) {
-                        var remainQuantity = inventory.remainQty - newQty;
-                        var saleDetails = Pos.Collection.SaleDetails.find({
-                            _id: {$ne: self._id},
-                            productId: product._id,
-                            saleId: saleId,
-                            locationId: locationId
-                        });
-                        if (saleDetails.count() > 0) {
-                            var saleDetailQty = 0;
-                            saleDetails.forEach(function (saleDetail) {
-                                saleDetailQty += saleDetail.quantity;
-                            });
-                            remainQuantity = remainQuantity - saleDetailQty;
-                        }
-                        if (remainQuantity < 0) {
-                            alertify.warning('Product is out of stock. Quantity in stock is "' + inventory.remainQty + '".');
-                            $(e.currentTarget).val(oldQty);
-                        } else {
-                            var unSavedSaleId = Pos.Collection.Sales.find({
-                                status: "Unsaved",
-                                branchId: Session.get('currentBranch'),
-                                _id: {$ne: saleId}
-                            }).map(function (s) {
-                                return s._id;
-                            });
-                            var otherSaleDetails = Pos.Collection.SaleDetails.find({
-                                saleId: {$in: unSavedSaleId},
-                                productId: product._id
-                            });
-                            var otherQuantity = 0;
-                            if (otherSaleDetails != null) {
-                                otherSaleDetails.forEach(function (sd) {
-                                    otherQuantity += sd.quantity;
-                                });
-                            }
-                            remainQuantity = remainQuantity - otherQuantity;
-                            if (remainQuantity < 0) {
-                                $(e.currentTarget).val(oldQty);
-                                alertify.warning('Product is out of stock. Quantity in stock is "' +
-                                    inventory.remainQty + '". And quantity on sale of other seller is "' + otherQuantity + '".');
+ function checkoutStock(self, oldQty, newQty, e) {
+ var saleId = $('#sale-id').val();
+ var branchId = Session.get('currentBranch');
+ var sdId = self._id;
+ var locationId = $('#location-id').val();
+ var set = {};
+ set.quantity = newQty;
+ set.amount = (self.price * newQty) * (1 - self.discount / 100);
+ //var product = Pos.Collection.Products.findOne(productId);
+ Meteor.call('findOneRecord', 'Pos.Collection.Products', {_id: self.productId}, {}, function (error, product) {
+ if (product) {
+ if (product.productType == "Stock") {
+ //---Open Inventory type block "FIFO Inventory"---
+ Meteor.call('findOneRecord', 'Pos.Collection.FIFOInventory', {
+ branchId: branchId,
+ productId: product._id,
+ locationId: locationId
+ }, {sort: {createdAt: -1}}, function (error, inventory) {
+ if (inventory) {
+ var remainQuantity = inventory.remainQty - newQty;
+ var saleDetails = Pos.Collection.SaleDetails.find({
+ _id: {$ne: self._id},
+ productId: product._id,
+ saleId: saleId,
+ locationId: locationId
+ });
+ if (saleDetails.count() > 0) {
+ var saleDetailQty = 0;
+ saleDetails.forEach(function (saleDetail) {
+ saleDetailQty += saleDetail.quantity;
+ });
+ remainQuantity = remainQuantity - saleDetailQty;
+ }
+ if (remainQuantity < 0) {
+ alertify.warning('Product is out of stock. Quantity in stock is "' + inventory.remainQty + '".');
+ $(e.currentTarget).val(oldQty);
+ } else {
+ var unSavedSaleId = Pos.Collection.Sales.find({
+ status: "Unsaved",
+ branchId: Session.get('currentBranch'),
+ _id: {$ne: saleId}
+ }).map(function (s) {
+ return s._id;
+ });
+ var otherSaleDetails = Pos.Collection.SaleDetails.find({
+ saleId: {$in: unSavedSaleId},
+ productId: product._id
+ });
+ var otherQuantity = 0;
+ if (otherSaleDetails != null) {
+ otherSaleDetails.forEach(function (sd) {
+ otherQuantity += sd.quantity;
+ });
+ }
+ remainQuantity = remainQuantity - otherQuantity;
+ if (remainQuantity < 0) {
+ $(e.currentTarget).val(oldQty);
+ alertify.warning('Product is out of stock. Quantity in stock is "' +
+ inventory.remainQty + '". And quantity on sale of other seller is "' + otherQuantity + '".');
 
-                            } else {
-                                Meteor.call('updateSaleDetails', self._id, set);
-                            }
-                        }
-                    } else {
-                        alertify.warning("Don't have product in stock.");
-                        $(e.currentTarget).val(oldQty);
-                    }
-                });
-            } else {
-                Meteor.call('updateSaleDetails', self._id, set);
-            }
-        }
-        else {
-            alertify.warning("Can't find this product.");
-            $(e.currentTarget).val(oldQty);
-        }
-    });
+ } else {
+ Meteor.call('updateSaleDetails', self._id, set);
+ }
+ }
+ } else {
+ alertify.warning("Don't have product in stock.");
+ $(e.currentTarget).val(oldQty);
+ }
+ });
+ } else {
+ Meteor.call('updateSaleDetails', self._id, set);
+ }
+ }
+ else {
+ alertify.warning("Can't find this product.");
+ $(e.currentTarget).val(oldQty);
+ }
+ });
 
-}*/
+ }*/

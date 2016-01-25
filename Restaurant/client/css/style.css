@@ -11,10 +11,20 @@
     position: relative;
     float: left;
     margin: 5px;
-    border-radius: 10px 10px 10px 10px;
+  /*  border-radius: 10px 10px 10px 10px;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px 10px 10px 10px;
-    border: 0px solid #000000;
+    border: 0px solid #000000;*/
+}
+.product-price{
+    float: right;
+    font-size: 15px;
+    color: yellow;
+    padding: 5px;
+    background: green;
+    position: absolute;
+    margin-top: -9px;
+    margin-left: -15px;
 }
 
 a {
