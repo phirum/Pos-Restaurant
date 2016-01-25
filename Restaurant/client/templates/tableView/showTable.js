@@ -16,5 +16,18 @@ restaurantShowTableTPL.onRendered(function () {
     $('[data-toggle="popover"]').popover();
 });
 
-restaurantShowTableTPL.events({});
-restaurantShowTableTPL.helpers({});
+restaurantShowTableTPL.events({
+    'click .add-invoice': function () {
+        Session.set('tableIdSession', this._id);
+        FlowRouter.go('/restaurant/checkout');
+    }
+});
+restaurantShowTableTPL.helpers({
+    sales: function () {
+        return Restaurant.Collection.Sales.find({tableId: this._id});
+    },
+    hasSale: function (tableId) {
+        var sale = Restaurant.Collection.Sales.findOne({tableId: tableId});
+        return sale!=null;
+    }
+});

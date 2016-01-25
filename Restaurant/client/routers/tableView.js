@@ -4,11 +4,15 @@ restaurantRoutes.route('/tableView', {
     subscriptions: function (params, queryParams) {
         this.register(
             'restaurant_table',
-            Meteor.subscribe('restaurantTable')
+            Meteor.subscribe('restaurantTable', {branchId: Session.get('currentBranch')})
         );
         this.register(
             'restaurant_tableLocation',
-            Meteor.subscribe('restaurantTableLocation')
+            Meteor.subscribe('restaurantTableLocation', {branchId: Session.get('currentBranch')})
+        );
+        this.register(
+            'restaurant_sales',
+            Meteor.subscribe('restaurantSale', {branchId: Session.get('currentBranch'), status: "Unsaved"})
         );
     },
     action: function (params, queryParams) {

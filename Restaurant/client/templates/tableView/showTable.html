@@ -1,13 +1,23 @@
 <template name="restaurant_showTable">
 
-    <div id="{{_id}}" class="drag-obj"
-         style="background:#0086b3;position:absolute;left:{{left}}px;top:{{top}}px;width:200px;">
+    <div id="{{_id}}" class="drag-obj {{#if hasSale _id}} btn-success{{else}} btn-primary{{/if}}"
+         style="position:absolute;left:{{left}}px;top:{{top}}px;width:200px;">
         <div class="handle-drag">
             {{name}}
-            <button type="button" class="pull-right btn btn-lg btn-danger" data-toggle="popover"
-                    title="Popover title"
-                    data-content="And here's some amazing content. It's very engaging. Right?">
-                <i class="fa fa-plus"></i></button>
+            <div class="dropup">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    Invoices
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <li class="add-invoice"><a>Add New Invoice</a></li>
+                    <li role="separator" class="divider"></li>
+                    {{#each sales}}
+                        <li><a href="/restaurant/checkout/{{_id}}">{{_id}} | {{_customer.name}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
         </div>
     </div>
     <!--<button id="{{_id}}" class="btn btn-default btn-drag" style="position:absolute;left:{{left}}px;top:{{top}}px;width:200px;">

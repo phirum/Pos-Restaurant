@@ -62,6 +62,20 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <span class="panel-title"><b>Product List</b>
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle btn-sm" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                   <i class="fa fa-undo"></i> Resume Invoice
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    {{#each sales}}
+                                        <!--onclick="Session.set('hasUpdate', false);"-->
+                                        <li><a href="/restaurant/checkout/{{_id}}" class="resume"
+                                               data-id="{{_id}}">{{_customer.name}}
+                                            | {{_id}}</a></li>
+                                    {{/each}}
+                                </ul>
+                            </div>
                             <input type="text" class="la-box pull-right" id="sale-id"
                                    value="{{sale._id}}" readonly/></span>
 
@@ -319,19 +333,19 @@
                 <div class="pull-right">
 
                     <div class="btn-group dropup">
-                        <button type="button" class="btn btn-primary dropdown-toggle"
-                                data-toggle="dropdown"><i class="fa fa-undo"></i>&nbsp;Resume<span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            {{#each sales}}
-                                <!--onclick="Session.set('hasUpdate', false);"-->
-                                <li><a href="/restaurant/checkout/{{_id}}" class="resume"
-                                       data-id="{{_id}}">{{_customer.name}}
-                                    | {{_id}}</a></li>
-                            {{/each}}
+                    <button type="button" class="btn btn-primary dropdown-toggle"
+                            data-toggle="dropdown"><i class="fa fa-undo"></i>&nbsp;Resume<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        {{#each sales}}
+                            <!--onclick="Session.set('hasUpdate', false);"-->
+                            <li><a href="/restaurant/checkout/{{_id}}" class="resume"
+                                   data-id="{{_id}}">{{_customer.name}}
+                                | {{_id}}</a></li>
+                        {{/each}}
 
-                        </ul>
-                    </div>
+                    </ul>
+                </div>
                     <button type="button" id="suspend" class="btn btn-info"><i class="fa fa-archive"></i>&nbsp;Suspend
                     </button>
                     <a href="/restaurant/checkout/print/{{sale._id}}" id="btn-print" class="btn hidden btn-primary"
