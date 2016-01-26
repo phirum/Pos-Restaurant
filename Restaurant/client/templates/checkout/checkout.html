@@ -7,19 +7,6 @@
                         <h3 class="panel-title"><b>Sale</b></h3>
                     </div>
                     <div class="panel-body">
-                        <!--    {{#each categories}}
-                            <ol>
-                                <li>
-                                    {{name}}
-                                    <ul>
-                                        {{#each products}}
-                            {{>showProduct}}
-                        {{/each}}
-                                    </ul>
-                                </li>
-                            </ol>
-
-                        {{/each}}-->
                         <div class="row">
                             <div class="col-lg-2" style="text-align: center">
                                 <div class="row"><h5>Unit</h5></div>
@@ -29,7 +16,6 @@
                                              class="btn {{#if thatUnit _id}} btn-success{{else}} btn-primary{{/if}} unit">{{name}}</div>
                                     </div>
                                 {{/each}}
-
                             </div>
                             <div class="col-lg-10">
                                 <ul id="myTabs" class="nav nav-tabs" role="tablist">
@@ -83,53 +69,59 @@
 
                     </div>
                     <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="sale-id" class="col-sm-4 control-label">ID</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control input-sm" id="sale-id">
+                        <form class="form-horizontal">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="sale-id" class="col-sm-4 control-label">Date</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control input-sm" id="sale-date" readonly
+                                                   value="{{sale.saleDate}}">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="staff-id" class="col-sm-4 control-label">Staff</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control input-sm" id="staff-id">
-                                            {{#each staffs}}
-                                                <option value="{{_id}}">{{name}}</option>
-                                            {{/each}}
-                                        </select>
-                                        <!--<input type="text" class="form-control input-sm" id="staff-id">-->
+                                    <div class="form-group">
+                                        <label for="staff-id" class="col-sm-4 control-label">Staff</label>
+                                        <div class="col-sm-8">
+                                            <select class="form-control input-sm" id="staff-id">
+                                                {{#each staffs}}
+                                                    <option value="{{_id}}"
+                                                            selected="{{#if compareTwoValue _id sale.staffId}}selected{{/if}}">{{name}}</option>
+                                                {{/each}}
+                                            </select>
+                                            <!--<input type="text" class="form-control input-sm" id="staff-id">-->
+                                        </div>
                                     </div>
-                                </div>
 
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="staff-id" class="col-sm-4 control-label">Table</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control input-sm" id="table-id">
-                                            {{#each tables}}
-                                                <option value="{{_id}}">{{name}}</option>
-                                            {{/each}}
-                                        </select>
-                                        <!--<input type="text" class="form-control input-sm" id="staff-id">-->
-                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="customer-id" class="col-sm-4 control-label">Customer</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control input-sm" id="customer-id">
-                                            {{#each customers}}
-                                                <option value="{{_id}}">{{name}}</option>
-                                            {{/each}}
-                                        </select>
-                                        <!--<input type="text" class="form-control input-sm" id="customer-id">-->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="staff-id" class="col-sm-4 control-label">Table</label>
+                                        <div class="col-sm-8">
+                                            <select class="form-control input-sm" id="table-id">
+                                                {{#each tables}}
+                                                    <option value="{{_id}}"
+                                                            selected="{{#if compareTableId _id}}selected{{/if}}">{{name}}</option>
+                                                {{/each}}
+                                            </select>
+                                            <!--<input type="text" class="form-control input-sm" id="staff-id">-->
+                                        </div>
                                     </div>
-                                </div>
+                                    <div class="form-group">
+                                        <label for="customer-id" class="col-sm-4 control-label">Customer</label>
+                                        <div class="col-sm-8">
+                                            <select class="form-control input-sm" id="customer-id">
+                                                {{#each customers}}
+                                                    <option value="{{_id}}"
+                                                            selected="{{#if compareTwoValue _id sale.customerId}}selected{{/if}}">{{name}}</option>
+                                                {{/each}}
+                                            </select>
+                                            <!--<input type="text" class="form-control input-sm" id="customer-id">-->
+                                        </div>
+                                    </div>
 
+                                </div>
                             </div>
-                        </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-striped table-responsive table-condensed table-hover table-bordered">
                                 <thead class="jumbotron">
@@ -335,11 +327,13 @@
                         </div>-->
                     </div>
                 </div>
+                <a href="/restaurant/tableView" class="btn btn-info" id="btn-to-table-view"><i
+                        class="fa fa-arrow-left"></i> Table View</a>
                 <div class="pull-right">
-
                     <div class="btn-group dropup">
                         <button type="button" class="btn btn-primary dropdown-toggle"
-                                data-toggle="dropdown"><i class="fa fa-undo"></i>&nbsp;Resume<span class="caret"></span>
+                                data-toggle="dropdown"><i class="fa fa-undo"></i>&nbsp;Resume<span
+                                class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             {{#each sales}}
@@ -351,20 +345,22 @@
 
                         </ul>
                     </div>
-                    <button type="button" id="suspend" class="btn btn-info"><i class="fa fa-archive"></i>&nbsp;Suspend
-                    </button>
+                    <!--<button type="button" id="suspend" class="btn btn-info"><i class="fa fa-archive"></i>&nbsp;Suspend
+                    </button>-->
+
                     <a href="/restaurant/checkout/print/{{sale._id}}" id="btn-print" class="btn hidden btn-primary"
                        target="_blank"><i
                             class="fa fa-money"></i>&nbsp;Print</a>
                     <a id="print-invoice" class="btn btn-warning"><i
                             class="fa fa-money"></i>&nbsp;Print</a>
-                    <a id="save-without-pay" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</a>
+                    <!--<a id="save-without-pay" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</a>-->
                     <button type="button" class="btn btn-success" data-toggle="modal" id="btn-pay"><i
                             class="fa fa-money"></i>&nbsp;Pay
                     </button>
                     <button type="button" class="btn btn-danger" id="cancel-sale"><i class="fa fa-trash-o"></i>&nbsp;Cancel
                     </button>
                 </div>
+
             </div>
 
         </div>

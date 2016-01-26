@@ -210,3 +210,9 @@ Meteor.publish('restaurantOwedSale', function () {
     }));
     this.ready();
 });
+Meteor.publish('restaurantNote', function (selector) {
+    if (this.userId) {
+        selector = selector == null ? {} : selector;
+        return Restaurant.Collection.Notes.find(selector, {removed: true});
+    }
+});

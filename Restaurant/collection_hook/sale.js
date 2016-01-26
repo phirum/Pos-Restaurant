@@ -6,37 +6,37 @@ Restaurant.Collection.SaleDetails.after.remove(function (userId, doc) {
     var sale = Restaurant.Collection.Sales.findOne(doc.saleId);
     if (sale != null) {
         updateSaleTotal(doc.saleId);
-       // removePromotionProduct(doc);
+        // removePromotionProduct(doc);
     }
 
 });
 
 Restaurant.Collection.SaleDetails.after.insert(function (userId, doc) {
     updateSaleTotal(doc.saleId);
-   /* Meteor.defer(function () {
-        var sale = Restaurant.Collection.Sales.findOne(doc.saleId);
-        var saleDate = sale.saleDate;
-        checkPromotion(doc, saleDate);
-    });*/
+    /* Meteor.defer(function () {
+     var sale = Restaurant.Collection.Sales.findOne(doc.saleId);
+     var saleDate = sale.saleDate;
+     checkPromotion(doc, saleDate);
+     });*/
 });
 
 Restaurant.Collection.SaleDetails.after.update(function (userId, doc, fieldNames, modifier, options) {
     updateSaleTotal(doc.saleId);
-   /* Meteor.defer(function () {
-        var sale = Restaurant.Collection.Sales.findOne(doc.saleId);
-        var saleDate = sale.saleDate;
-        checkPromotion(doc, saleDate);
-    });*/
+    /* Meteor.defer(function () {
+     var sale = Restaurant.Collection.Sales.findOne(doc.saleId);
+     var saleDate = sale.saleDate;
+     checkPromotion(doc, saleDate);
+     });*/
 });
 
 Restaurant.Collection.Sales.after.update(function (userId, doc, fieldNames, modifier, options) {
     updateSaleTotal(doc._id);
-   /* Meteor.defer(function () {
-        var saleDetails = Restaurant.Collection.SaleDetails.find({saleId: doc._id});
-        saleDetails.forEach(function (saleDetail) {
-            checkPromotion(saleDetail, doc.saleDate);
-        })
-    });*/
+    /* Meteor.defer(function () {
+     var saleDetails = Restaurant.Collection.SaleDetails.find({saleId: doc._id});
+     saleDetails.forEach(function (saleDetail) {
+     checkPromotion(saleDetail, doc.saleDate);
+     })
+     });*/
 
 });
 Restaurant.Collection.Sales.after.remove(function (userId, doc) {
@@ -46,6 +46,7 @@ Restaurant.Collection.Sales.after.remove(function (userId, doc) {
 
 function updateSaleTotal(saleId) {
     Meteor.defer(function () {
+        Meteor._sleepForMs(1000);
         var set = {};
         //var discount = Restaurant.Collection.Sales.findOne(saleId).discountAmount;
         var sale = Restaurant.Collection.Sales.findOne(saleId);
@@ -85,11 +86,11 @@ function updateSaleTotal(saleId) {
         if (baseCurrencyId == "KHR") {
             total = roundRielCurrency(total);
         }
-       // var discountAmount = saleSubTotal * discount / 100;
+        // var discountAmount = saleSubTotal * discount / 100;
 
         set.subTotal = saleSubTotal;
         set.total = total;
-       // set.discountAmount = discountAmount;
+        // set.discountAmount = discountAmount;
         set.owedAmount = total;
         //set.discountAmount=saleSubTotal-total;
         Restaurant.Collection.Sales.direct.update(saleId, {$set: set});

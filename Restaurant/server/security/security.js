@@ -34,7 +34,8 @@ Security.permit(['insert', 'update', 'remove']).collections([
     Restaurant.Collection.LocationTransfers,
     Restaurant.Collection.LocationTransferDetails,
     Restaurant.Collection.TableLocations,
-    Restaurant.Collection.Tables
+    Restaurant.Collection.Tables,
+    Restaurant.Collection.Notes
 ]).restaurantIsAdmin().apply();
 
 Security.permit(['insert', 'update', 'remove']).collections([

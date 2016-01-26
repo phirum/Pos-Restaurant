@@ -20,6 +20,18 @@ Template.restaurant_checkout.onRendered(function () {
     }, 500);
 });
 Template.restaurant_checkout.helpers({
+    compareTableId: function (id) {
+        var sale = Restaurant.Collection.Sales.findOne(FlowRouter.getParam('saleId'));
+        var tableId = Session.get('tableIdSession');
+        if (sale) {
+            return id == sale.tableId;
+        } else if (tableId) {
+            return id == tableId;
+        } else {
+            return false;
+        }
+
+    },
     getFileOfCurrency: function (id, field) {
         var currency = Cpanel.Collection.Currency.findOne(id);
         return currency[field];
@@ -147,6 +159,34 @@ Template.restaurant_checkout.helpers({
     }
 });
 Template.restaurant_checkout.events({
+    'change #table-id': function (e) {
+        var saleId = $('#sale-id').val();
+        if (saleId == "") return;
+        var tableId = $(e.currentTarget).val();
+        var set = {};
+        set.tableId = tableId;
+        Meteor.call('directUpdateSale', saleId, set, function (er, re) {
+            if (er) alertify.error(er.message);
+        });
+    },
+    'change #customer-id': function (e) {
+        var saleId = $('#sale-id').val();
+        if (saleId == "") return;
+        var customerId = $(e.currentTarget).val();
+        var set = {customerId: customerId};
+        Meteor.call('directUpdateSale', saleId, set, function (er, re) {
+            if (er) alertify.error(er.message);
+        });
+    },
+    'change #staff-id': function (e) {
+        var saleId = $('#sale-id').val();
+        if (saleId == "") return;
+        var staffId = $(e.currentTarget).val();
+        var set = {staffId: staffId};
+        Meteor.call('directUpdateSale', saleId, set, function (er, re) {
+            if (er) alertify.error(er.message);
+        });
+    },
     'click .unit': function () {
         Session.set('unitSession', this._id);
     },
@@ -211,6 +251,32 @@ Template.restaurant_checkout.events({
         /*else {
          updateSaleSubTotal(FlowRouter.getParam('saleId'));
          }*/
+    },
+    'change #total_discount': function (e) {
+        var value = $(e.currentTarget).val();
+        var numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        var saleId = $('#sale-id').val();
+        if (saleId == "") return;
+        var sale = Restaurant.Collection.Sales.findOne(saleId);
+        var firstTotalDiscount = sale.discount == null ? 0 : sale.discount;
+        var discount = parseFloat($(e.currentTarget).val());
+        if (!numericReg.test(value) || $(e.currentTarget).val() == "" || discount < 0 || discount > 100) {
+            $(e.currentTarget).val(firstTotalDiscount);
+            $(e.currentTarget).focus();
+            return;
+        }
+        var baseCurrencyId = Cpanel.Collection.Setting.findOne().baseCurrency;
+        var total = sale.subTotal * (1 - discount / 100);
+        //var discountAmount = sale.subTotal * discount / 100;
+        if (baseCurrencyId == "KHR") {
+            total = roundRielCurrency(total);
+        }
+        var set = {};
+        set.discount = discount;
+        set.total = total;
+        Meteor.call('directUpdateSale', saleId, set, function (er, re) {
+            if (er) alertify.error(er.message);
+        });
     }
 });
 

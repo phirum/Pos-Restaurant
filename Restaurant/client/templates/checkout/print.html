@@ -19,7 +19,7 @@
                             Address: {{company.khAddress}}<br>
                             Tel: {{company.telephone}}<br>
 						<span style="font-weight: bold;font-size: 15px;">
-                            Invoice(<span style="font-size: 13px;"> {{sale.InvoiceType}}</span>)</span>
+                            Invoice</span>
                             <hr>
                         </td>
                     </tr>
@@ -27,14 +27,16 @@
                         <td>
                             <table width="100%">
                                 <tr>
-                                    <td>Sale ID:{{sale._id}}</td>
-                                    <td align="right">Staff: {{sale._staff.name}}</td>
-
+                                    <td>Invoice:{{sale._id}}</td>
+                                    <td align="right">Customer:{{sale._customer.name}}</td>
                                 </tr>
                                 <tr>
                                     <td>Date:{{sale.saleDate}}</td>
-                                    <td>Table: {{sale.table}}</td>
-                                    <td align="right">Customer:{{sale._customer.name}}</td>
+                                    <td align="right">Table: {{sale._table.name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Staff: {{sale._staff.name}}</td>
+                                    <td></td>
                                 </tr>
                             </table>
                         </td>
@@ -42,19 +44,19 @@
                     <tr>
                         <td>
                             <table width="100%">
-                                <tr style="text-align: center; text-decoration: underline;">
-                                    <td align="left"> Product</td>
-                                    <td align="right"> Price</td>
+                                <tr style="text-decoration: underline;">
+                                    <td align="left"> Item</td>
+                                    <td> Price</td>
                                     <td> Qty</td>
-                                    <td> Discount</td>
+                                    <!--<td> Discount</td>-->
                                     <td align="right"> Amount</td>
                                 </tr>
                                 {{#each saleDetails}}
                                     <tr>
                                         <td>{{order}}-{{_product.name}}</td>
-                                        <td align="right">{{price}}</td>
-                                        <td align="center">{{quantity}}-{{_product._unit.name}}</td>
-                                        <td align="center">{{discount}}</td>
+                                        <td>{{price}}</td>
+                                        <td>{{quantity}}</td>
+                                        <!--<td align="center">{{discount}}</td>-->
                                         <td style="text-align: right;">{{amountFormated}} {{baseCurrency.symbol}}</td>
                                     </tr>
                                 {{/each}}
@@ -101,7 +103,7 @@
                                             <td style="text-align: right;font-weight: bold">{{formatFixTwo return}}</td>
                                         </tr>
                                     {{/each}}
-                            {{/if}}
+                                {{/if}}
                             </table>
                         </td>
                     </tr>
