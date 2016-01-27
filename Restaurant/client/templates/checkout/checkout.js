@@ -163,6 +163,24 @@ Template.restaurant_checkout.helpers({
     }
 });
 Template.restaurant_checkout.events({
+    'click #save-without-pay': function () {
+        var saleId = $('#sale-id').val();
+        if (saleId == "") return;
+        var branchId = Session.get('currentBranch');
+        var saleObj = {};
+        saleObj.status = 'Owed';
+        Meteor.call('directUpdateSale', saleId, saleObj, function (er, re) {
+            if (er) {
+                alertify.error(er.message);
+            } else {
+                Meteor.call('directUpdateSaleDetailsStatus', saleId, function (er, re) {
+                    if (er) alertify.error(er.message);
+                });
+                alertify.success('Sale is saved successfully');
+                FlowRouter.go('restaurant.checkout');
+            }
+        });
+    },
     'mouseleave .pay-amount': function (e) {
         var value = $(e.currentTarget).val();
         var numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
@@ -595,6 +613,7 @@ function pay(saleId) {
      return;
      }*/
     var baseCurrencyId = Cpanel.Collection.Setting.findOne().baseCurrency;
+    obj.paymentDate = new Date();
     obj.saleId = saleId;
     obj.payAmount = totalPay;
     obj.payAmount = numeral().unformat(numeral(totalPay).format('0,0.00'));
@@ -605,17 +624,23 @@ function pay(saleId) {
     obj.branchId = branchId;
     debugger;
     Meteor.call('insertPayment', obj, function (error, result) {
-        if (error) alertify.error(error.message);
-    });
-   /* Meteor.call('saleManageStock', saleId, branchId, function (error, result) {
         if (error) {
             alertify.error(error.message);
         } else {
-            $('#payment').modal('hide');
-            FlowRouter.go('pos.checkout');
-            prepareForm();
+            Meteor.call('directUpdateSaleDetailsStatus', saleId, function (er, re) {
+                if (er) alertify.error(er.message);
+            })
         }
-    });*/
+    });
+    /* Meteor.call('saleManageStock', saleId, branchId, function (error, result) {
+     if (error) {
+     alertify.error(error.message);
+     } else {
+     $('#payment').modal('hide');
+     FlowRouter.go('pos.checkout');
+     prepareForm();
+     }
+     });*/
 }
 function calculatePayment() {
     var total = 0;

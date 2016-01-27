@@ -9,7 +9,7 @@ restaurantSalePaymentTPL.onRendered(function () {
 restaurantSalePaymentTPL.helpers({
     selector: function () {
         var selector = {};
-        selector.purchaseId = null;
+        //selector.purchaseId = null;
         selector.branchId = Session.get('currentBranch');
         return selector;
     }
@@ -19,48 +19,87 @@ restaurantSalePaymentTPL.events({
         alertify.salePayment(fa('plus', 'Add New Payment'), renderTemplate(restaurantSalePaymentInsertTPL)).maximize();
     },
     'click .update': function (e, t) {
-        var data = Restaurant.Collection.Payments.findOne(this._id);
-        Session.set('paymentObj', data);
-        var payment = Restaurant.Collection.Payments.findOne({
-                saleId: data.saleId,
-                branchId: Session.get('currentBranch')
-            },
-            {
-                sort: {_id: -1, paymentDate: -1}
-
-            });
-        if (data._id == payment._id && data.status != "firstPay") {
-            alertify.salePayment(fa('pencil', 'Update Existing Payment'), renderTemplate(restaurantSalePaymentUpdateTPL, data)).maximize()
-        } else {
-            alertify.warning("This payment not the last one");
-        }
+        var id = this._id;
+        Meteor.call('findOneRecord', 'Restaurant.Collection.Payments', {_id: id}, {}, function (error, payment) {
+            if (payment) {
+                Session.set('paymentObj', payment);
+                Meteor.call('findOneRecord', 'Restaurant.Collection.Payments', {
+                    saleId: payment.saleId,
+                    branchId: Session.get('currentBranch')
+                }, {sort: {_id: -1, paymentDate: -1}}, function (err, lastPayment) {
+                    if (payment._id == lastPayment._id) {
+                        alertify.salePayment(fa('pencil', 'Update Existing Payment'), renderTemplate(restaurantSalePaymentUpdateTPL, payment)).maximize()
+                    } else {
+                        alertify.warning("This payment not the last one");
+                    }
+                });
+            } else {
+                alertify.error(error.message);
+            }
+        });
     },
     'click .remove': function (e, t) {
         var id = this._id;
-        var data = Restaurant.Collection.Payments.findOne(id);
-        var payment = Restaurant.Collection.Payments.findOne({
-                saleId: data.saleId,
-                branchId: Session.get('currentBranch')
-            },
-            {sort: {_id: -1, paymentDate: -1}}
-        );
-        if (data._id == payment._id && data.status != "firstPay") {
-            alertify.confirm("Are you sure to delete [" + id + "]?")
-                .set({
-                    onok: function (closeEvent) {
-                        Restaurant.Collection.Payments.remove(id, function (error) {
-                            if (error) {
-                                alertify.error(error.message);
-                            } else {
-                                alertify.success("Success");
-                            }
-                        });
-                    },
-                    title: '<i class="fa fa-remove"></i> Delete Payment'
+        Meteor.call('findOneRecord', 'Restaurant.Collection.Payments', {_id: id}, {}, function (error, payment) {
+            if (payment) {
+                Meteor.call('findOneRecord', 'Restaurant.Collection.Payments', {
+                    saleId: payment.saleId,
+                    branchId: Session.get('currentBranch')
+                }, {sort: {_id: -1, paymentDate: -1}}, function (err, lastPayment) {
+                    if (lastPayment) {
+                        if (payment._id == lastPayment._id) {
+                            alertify.confirm("Are you sure to delete [" + id + "]?")
+                                .set({
+                                    onok: function (closeEvent) {
+                                        Restaurant.Collection.Payments.remove(id, function (e) {
+                                            if (e) {
+                                                alertify.error(e.message);
+                                            } else {
+                                                alertify.success("Success");
+                                            }
+                                        });
+                                    },
+                                    title: '<i class="fa fa-remove"></i> Delete Payment'
+                                });
+                        } else {
+                            alertify.warning("This payment not the last one");
+                        }
+                    } else {
+                        alertify.error(err.message);
+                    }
                 });
-        } else {
-            alertify.warning("This payment not the last one");
-        }
+            }
+            else {
+                alertify.error(error.message);
+            }
+        });
+
+
+        /*
+         var data = Restaurant.Collection.Payments.findOne(id);
+         var payment = Restaurant.Collection.Payments.findOne({
+         saleId: data.saleId,
+         branchId: Session.get('currentBranch')
+         },
+         {sort: {_id: -1, paymentDate: -1}}
+         );
+         if (data._id == payment._id && data.status != "firstPay") {
+         alertify.confirm("Are you sure to delete [" + id + "]?")
+         .set({
+         onok: function (closeEvent) {
+         Restaurant.Collection.Payments.remove(id, function (error) {
+         if (error) {
+         alertify.error(error.message);
+         } else {
+         alertify.success("Success");
+         }
+         });
+         },
+         title: '<i class="fa fa-remove"></i> Delete Payment'
+         });
+         } else {
+         alertify.warning("This payment not the last one");
+         }*/
 
     },
     'click .show': function (e, t) {
@@ -71,6 +110,15 @@ restaurantSalePaymentInsertTPL.onRendered(function () {
     datePicker();
 });
 restaurantSalePaymentInsertTPL.helpers({
+    saleList: function () {
+        var customerSession = Session.get('customerId');
+        var branchIdSession = Session.get('currentBranch');
+        var selector = {};
+        selector.status = "Owed";
+        if (branchIdSession != null) selector.branchId = branchIdSession;
+        if (customerSession != null) selector.customerId = customerSession;
+        return ReactiveMethod.call('getSaleListForPayment',selector);
+    },
     dueAmount: function () {
         var dueAmount = Session.get('dueAmount');
         return dueAmount == null ? 0 : dueAmount;
@@ -117,23 +165,27 @@ restaurantSalePaymentInsertTPL.events({
             alertify.error('Please input all requirement input.');
             return;
         }
-        var payment = Restaurant.Collection.Payments.findOne({
-                saleId: saleId,
-                branchId: Session.get('currentBranch')
-                //balanceAmount: {$gt: 0}
-            },
-            {
-                sort: {_id: -1, paymentDate: -1}
+        Meteor.call('findOneRecord', 'Restaurant.Collection.Payments', {
+            saleId: saleId,
+            branchId: Session.get('currentBranch')
+        }, {sort: {_id: -1, paymentDate: -1}}, function (error, payment) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (payment) {
+                    paymentDate = moment(paymentDate).toDate();
+                    if (paymentDate < payment.paymentDate) {
+                        alertify.alert("Payment date can't less than the Last payment date.");
+                    } else {
+                        pay(saleId);
+                    }
+                } else {
+                    pay(saleId);
+                }
             }
-        );
-        if (payment != null) {
-            paymentDate = moment(paymentDate).toDate();
-            if (paymentDate < payment.paymentDate) {
-                alertify.alert("Payment date can't less than the Last payment date.");
-                return;
-            }
-        }
-        pay(saleId);
+
+        });
+
     },
     'mouseleave .pay-amount': function (e) {
         var value = $(e.currentTarget).val();
@@ -166,24 +218,31 @@ restaurantSalePaymentInsertTPL.events({
         if (saleId == "") {
             Session.set('dueAmount', 0);
         }
-        var payment = Restaurant.Collection.Payments.findOne({
-                saleId: saleId,
-                branchId: Session.get('currentBranch')
-                //balanceAmount: {$gt: 0}
-            },
-            {
-                sort: {_id: -1, paymentDate: -1}
+        Meteor.call('findOneRecord', 'Restaurant.Collection.Payments', {
+            saleId: saleId,
+            branchId: Session.get('currentBranch')
+        }, {sort: {_id: -1, paymentDate: -1}}, function (error, payment) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (payment == null) {
+                    Meteor.call('findOneRecord', 'Restaurant.Collection.Sales', {
+                        _id: saleId
+                    }, {}, function (err, sale) {
+                        if (sale) {
+                            Session.set('dueAmount', sale.total);
+                        } else {
+                            Session.set('dueAmount', null);
+                        }
+                    });
+                } else if (payment.balanceAmount <= 0) {
+                    alertify.alert('Paid');
+                    Session.set('dueAmount', null);
+                } else {
+                    Session.set('dueAmount', payment.balanceAmount);
+                }
             }
-        );
-        if (payment == null) {
-            var sale = Restaurant.Collection.Sales.findOne(saleId);
-            Session.set('dueAmount', sale.total);
-        } else if (payment.balanceAmount <= 0) {
-            alertify.alert('Paid');
-            Session.set('dueAmount', null);
-        } else {
-            Session.set('dueAmount', payment.balanceAmount);
-        }
+        });
     }
 });
 restaurantSalePaymentUpdateTPL.helpers({
@@ -274,25 +333,27 @@ restaurantSalePaymentUpdateTPL.events({
     'change select[name="saleId"]': function (e) {
         var saleId = $(e.currentTarget).val();
         clearFormData();
-        var payment = Restaurant.Collection.Payments.findOne({
-                saleId: saleId,
-                branchId: Session.get('currentBranch')
-                //balanceAmount: {$gt: 0}
-            },
-            {
-                sort: {_id: -1, paymentDate: -1}
+        Meteor.call('findOneRecord', 'Restaurant.Collection.Payments', {
+            saleId: saleId,
+            branchId: Session.get('currentBranch')
+        }, {sort: {_id: -1, paymentDate: -1}}, function (error, payment) {
+            if (payment) {
+                if (payment.balanceAmount <= 0) {
+                    alertify.alert('DueAmount <=0 : ' + payment.balanceAmount);
+                    Session.set('updatedDueAmount', null);
+                } else {
+                    Session.set('updatedDueAmount', payment.balanceAmount);
+                }
             }
-        );
-        if (payment == null) {
-            return false;
-        } else if (payment.balanceAmount <= 0) {
-            alertify.alert('DueAmount <=0 : ' + payment.balanceAmount);
-            Session.set('updatedDueAmount', null);
-        } else {
-            Session.set('updatedDueAmount', payment.balanceAmount);
-        }
+            else {
+                Session.set('updatedDueAmount', null);
+                alertify.error(error.message);
+            }
+        });
+
     }
-});
+})
+;
 AutoForm.hooks({
     restaurant_salePaymentInsert: {
         onSuccess: function (formType, result) {
@@ -377,7 +438,6 @@ function pay(saleId) {
         );
     });
     var baseCurrencyId = Cpanel.Collection.Setting.findOne().baseCurrency;
-    obj._id = idGenerator.genWithPrefix(Restaurant.Collection.Payments, saleId, 3);
     obj.paymentDate = moment($('[name="paymentDate"]').val()).toDate();
     obj.saleId = saleId;
     //obj.status = "firstPay";

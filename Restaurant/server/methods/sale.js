@@ -41,6 +41,10 @@ Meteor.methods({
         //Restaurant.Collection.SaleDetails.remove({saleId: saleId});
         Restaurant.Collection.Sales.remove(saleId);
     },
+    directUpdateSaleDetailsStatus: function (saleId) {
+        Restaurant.Collection.SaleDetails.direct.update({saleId: saleId}, {$set: {status: "Saved"}}, {multi: true});
+    },
+
     updateToRetailSale: function (saleId) {
         Restaurant.Collection.SaleDetails.find({saleId: saleId}).forEach(function (sd) {
             var retailPrice = Restaurant.Collection.Products.findOne(sd.productId).retailPrice;
@@ -52,5 +56,35 @@ Meteor.methods({
         var set = {};
         set.isRetail = true;
         Restaurant.Collection.Sales.update(saleId, {$set: set});
+    },
+    getSaleListForPayment: function (selector) {
+        var list = [{
+            label: "(Select One)",
+            value: ""
+        }];
+        Restaurant.Collection.Sales.find(selector).forEach(function (obj) {
+            var payment = Restaurant.Collection.Payments.findOne({
+                saleId: obj._id,
+                branchId: selector.branchId
+                //balanceAmount: {$gt: 0}
+            }, {
+                sort: {
+                    _id: -1,
+                    paymentDate: -1
+                }
+            });
+            if (payment == null) {
+                list.push({
+                    label: obj._id + ' : ' + obj._customer.name,
+                    value: obj._id
+                });
+            } else if (payment.balanceAmount > 0) {
+                list.push({
+                    label: obj._id + ' : ' + obj._customer.name,
+                    value: obj._id
+                });
+            }
+        });
+        return list;
     }
 });

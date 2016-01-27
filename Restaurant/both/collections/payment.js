@@ -8,77 +8,49 @@ Restaurant.Schema.Payments = new SimpleSchema({
             options: function () {
                 return Restaurant.List.customerList();
             }
-        }
-    },
-    supplierId: {
-        type: String,
-        label: "Supplier",
-        autoform: {
-            type: "select2",
-            options: function () {
-                return Restaurant.List.supplierList();
-            }
-        }
+        },
+        optional:true
     },
     saleId: {
         type: String,
-        label: "SaleId",
-        autoform: {
+        label: "SaleId"
+       /* autoform: {
             type: "select2",
             options: function () {
                 return Restaurant.List.saleList()
             }
-        }
-    },
-    purchaseId: {
-        type: String,
-        label: "PurchaseId",
-        autoform: {
-            type: "select2",
-            options: function () {
-                return Restaurant.List.purchaseList()
-            }
-        }
+        }*/
     },
     paymentDate: {
         type: String,
         label: "Payment Date"
     },
-    /*createdAt: {
-     type: Date,
-     label: "Created Date",
-     autoValue: function () {
-     if (this.isInsert)
-     return new Date;
-     },
-     denyUpdate: true,
-     optional: true
-     },
-     updatedAt: {
-     type: Date,
-     label: "Updated Date",
-     autoValue: function () {
-     return new Date();
-     },
-     optional: true
-     },
-     createdUserId: {
-     type: String,
-     label: "Created by",
-     autoValue: function () {
-     if (this.isInsert)
-     return Meteor.user()._id;
-     },
-     denyUpdate: true,
-     optional: true
-     },
-     updatedUserId: {
-     type: String,
-     label: "Updated by",
-     autoValue: function () {
-     return Meteor.user()._id;
-     },
-     optional: true
-     }*/
+    payAmount:{
+        type:Number,
+        label:"Pay Amount",
+        decimal:true
+    },
+    dueAmount:{
+        type:Number,
+        label:"Due Amount",
+        decimal:true
+    },
+    balanceAmount:{
+        type:Number,
+        label:"Balance Amount"
+    },
+    branchId:{
+        type:String,
+        label:"Branch"
+    },
+    status:{
+        type:String,
+        label:"Status"
+    },
+    payments:{
+        type:[Object],
+        label:"Payments",
+        blackbox:true
+    }
 });
-//Restaurant.Collection.Payments.attachSchema(Restaurant.Schema.Payments);
+Restaurant.Collection.Payments.attachSchema(Restaurant.Schema.Payments);

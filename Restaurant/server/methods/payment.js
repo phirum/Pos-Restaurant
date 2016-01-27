@@ -1,5 +1,10 @@
 Meteor.methods({
     insertPayment: function (obj) {
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        var prefix = obj.saleId;
+        obj._id = idGenerator.genWithPrefix(Restaurant.Collection.Payments, prefix, 3);
         Restaurant.Collection.Payments.insert(obj);
     },
     directInsertPayment: function (obj) {
