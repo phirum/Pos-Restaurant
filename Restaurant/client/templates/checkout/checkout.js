@@ -163,6 +163,62 @@ Template.restaurant_checkout.helpers({
     }
 });
 Template.restaurant_checkout.events({
+    'mouseleave .pay-amount': function (e) {
+        var value = $(e.currentTarget).val();
+        var numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        if (!numericReg.test(value)) {
+            $(e.currentTarget).val('');
+        }
+    },
+    'change .pay-amount': function (e) {
+        var value = $(e.currentTarget).val();
+        var numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        if (!numericReg.test(value)) {
+            $(e.currentTarget).val('');
+        }
+    },
+    'keyup .pay-amount': function () {
+        calculatePayment();
+    },
+    'click #print-sale': function () {
+        var baseCurrencyId = Cpanel.Collection.Setting.findOne().baseCurrency;
+        var t = true;
+        $('#payment-list tr').each(function () {
+            t = $(this).find('.pay-amount').val() == "" ? true : false;
+            if (t == false) {
+                return false
+            }
+        });
+        if ($('#' + baseCurrencyId).val() == "" || t) {
+            alertify.warning("Please input payment amount.");
+            return;
+        }
+        var saleId = $('#sale-id').val();
+        pay(saleId);
+        var url = $('#btn-print').attr('href');
+        window.open(url, '_blank');
+    },
+    'click #save-sale': function () {
+        var baseCurrencyId = Cpanel.Collection.Setting.findOne().baseCurrency;
+        var t = true;
+        $('#payment-list tr').each(function () {
+            t = $(this).find('.pay-amount').val() == "" ? true : false;
+            if (t == false) {
+                return false
+            }
+        });
+        if ($('#' + baseCurrencyId).val() == "" || t) {
+            alertify.warning("Please input payment amount.");
+            return
+        }
+        var saleId = $('#sale-id').val();
+        pay(saleId);
+    },
+    'click #btn-pay': function () {
+        if ($('#sale-id').val() == "") return;
+        $('#payment').modal('show');
+        clearDataFormPayment();
+    },
     'click .add-note': function () {
         alertify.addNote(fa('pencil', 'Note'), renderTemplate(restaurantAddNoteTPL, this));
     },
@@ -301,7 +357,10 @@ Template.restaurant_showProduct.events({
     }
 });
 
-
+function clearDataFormPayment() {
+    $('.pay-amount').val('');
+    $('.return-amount').val('');
+}
 function getValidatedValues() {
     var data = {};
     var id = Cpanel.Collection.Setting.findOne().baseCurrency;
@@ -508,6 +567,83 @@ function prepareForm() {
         //$('#product-barcode').focus();
         //$('#product-id').select2('val', '');
     }, 200);
+}
+function pay(saleId) {
+    var branchId = Session.get('currentBranch');
+    var obj = {};
+    obj.payments = [];
+    var totalPay = 0;
+    $('#payment-list tr').each(function () {
+        var currencyId = $(this).find('.currency-id').text();
+        var pay = $(this).find('.pay-amount').val() == "" ? 0 : $(this).find('.pay-amount').val();
+        var rate = $(this).find('.exchange-rate').val() == "" ? 0 : $(this).find('.exchange-rate').val();
+        var returnAmount = $(this).find('.return-amount').val();
+        returnAmount = numeral().unformat(returnAmount);
+        pay = parseFloat(pay);
+        rate = parseFloat(rate);
+        totalPay += pay / rate;
+        obj.payments.push(
+            {
+                currencyId: currencyId,
+                payAmount: pay,
+                rate: rate,
+                return: returnAmount
+            }
+        );
+    });
+    /*if(totalPay==0){
+     return;
+     }*/
+    var baseCurrencyId = Cpanel.Collection.Setting.findOne().baseCurrency;
+    obj.saleId = saleId;
+    obj.payAmount = totalPay;
+    obj.payAmount = numeral().unformat(numeral(totalPay).format('0,0.00'));
+    obj.dueAmount = parseFloat($('#due-grand-total').text().trim());
+    obj.balanceAmount = numeral().unformat(numeral(obj.dueAmount - obj.payAmount).format('0,0.00'));
+    //obj.balanceAmount = numeral().unformat($('#' + baseCurrencyId).val());
+    obj.status = obj.balanceAmount >= 0 ? "Paid" : "Owed";
+    obj.branchId = branchId;
+    debugger;
+    Meteor.call('insertPayment', obj, function (error, result) {
+        if (error) alertify.error(error.message);
+    });
+   /* Meteor.call('saleManageStock', saleId, branchId, function (error, result) {
+        if (error) {
+            alertify.error(error.message);
+        } else {
+            $('#payment').modal('hide');
+            FlowRouter.go('pos.checkout');
+            prepareForm();
+        }
+    });*/
+}
+function calculatePayment() {
+    var total = 0;
+    var dueTotal = parseFloat($('#due-grand-total').text().trim());
+    $('#payment-list tr').each(function () {
+        var currencyId = $(this).find('.currency-id').text();
+        var pay = $(this).find('.pay-amount').val() == "" ? 0 : $(this).find('.pay-amount').val();
+        var rate = $(this).find('.exchange-rate').val() == "" ? 0 : $(this).find('.exchange-rate').val();
+        var payCheckCurrency = currencyId == "KHR" ? roundDownRielCurrency(parseFloat(pay)) : parseFloat(pay);
+        total += payCheckCurrency / parseFloat(rate);
+    });
+    total = total - dueTotal;
+    $('#payment-list tr').each(function () {
+        var currencyId = $(this).find('.currency-id').text();
+        var rate = $(this).find('.exchange-rate').val() == "" ? 0 : $(this).find('.exchange-rate').val();
+        var returnAmount = (total) * parseFloat(rate);
+        if (currencyId == "KHR") {
+            $(this).find('.return-amount').val(numeral(roundRielCurrency(returnAmount)).format('0,0.00'));
+        } else {
+            $(this).find('.return-amount').val(numeral(returnAmount).format('0,0.00'));
+        }
+    });
+    var returnKHR = $('#KHR').val();
+    if (returnKHR != null) {
+        if (parseFloat(returnKHR) == 0) {
+            $('.return-amount').val(numeral(0).format('0,0.00'));
+        }
+    }
 }
 /*
  function checkoutStock(self, oldQty, newQty, e) {
