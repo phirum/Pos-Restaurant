@@ -1,1 +1,0 @@
-Restaurant.Collection.Notes.cacheTimestamp();
