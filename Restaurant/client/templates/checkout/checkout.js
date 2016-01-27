@@ -225,7 +225,7 @@ Template.restaurant_checkout.events({
         var set = {};
         set.quantity = quantity;
         set.amount = (this.price * set.quantity) * (1 - this.discount / 100);
-        Meteor.call('directUpdateSaleDetails', this._id, set, function (er, re) {
+        Meteor.call('updateSaleDetails', this._id, set, function (er, re) {
             if (er) alertify.error(err.message);
         });
     },
@@ -234,7 +234,7 @@ Template.restaurant_checkout.events({
         var set = {};
         set.quantity = quantity;
         set.amount = (this.price * set.quantity) * (1 - this.discount / 100);
-        Meteor.call('directUpdateSaleDetails', this._id, set, function (er, re) {
+        Meteor.call('updateSaleDetails', this._id, set, function (er, re) {
             if (er) alertify.error(err.message);
         });
     },

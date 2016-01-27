@@ -5,4 +5,4 @@ Restaurant.Collection.Sales.cacheDoc('table', Restaurant.Collection.Tables, ['na
 Restaurant.Collection.Sales.cacheDoc('staff', Restaurant.Collection.Staffs, ['name']);
 Restaurant.Collection.Sales.cacheDoc('exchangeRate', Restaurant.Collection.ExchangeRates, ['base', 'rates']);
 Restaurant.Collection.Sales.cacheDoc('customer', Restaurant.Collection.Customers, ['name']);
-Restaurant.Collection.Sales.cacheDoc('branch', Cpanel.Collection.Branch, ['khName', 'enName']);
+//Restaurant.Collection.Sales.cacheDoc('branch', Cpanel.Collection.Branch, ['khName', 'enName']);

@@ -46,7 +46,7 @@ Restaurant.Collection.Sales.after.remove(function (userId, doc) {
 
 function updateSaleTotal(saleId) {
     Meteor.defer(function () {
-        Meteor._sleepForMs(1000);
+        Meteor._sleepForMs(500);
         var set = {};
         //var discount = Restaurant.Collection.Sales.findOne(saleId).discountAmount;
         var sale = Restaurant.Collection.Sales.findOne(saleId);
