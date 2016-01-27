@@ -1,12 +1,13 @@
 <template name="restaurant_showTable">
 
-    <div id="{{_id}}" class="drag-obj {{#if hasSale _id}} btn-success{{else}} btn-primary{{/if}}"
+    <div id="{{_id}}" class="drag-obj {{#if hasSale _id}} orange-darken {{else}} {{/if}}"
          style="position:absolute;left:{{left}}px;top:{{top}}px;width:200px;">
         <div class="handle-drag">
-            {{name}}
-            <div class="dropup">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown"
+            <span class='pull-right'><i class="fa fa-tablet"></i> {{name}}</span>
+            <div class="dropdown">
+                <button class=" btn-cus  dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
+                        <i class="{{#if hasSale _id}} fa fa-check{{/if}}"></i>
                     Invoices
                     <span class="caret"></span>
                 </button>
