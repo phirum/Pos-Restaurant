@@ -1,6 +1,7 @@
 Session.setDefault('unitSession', null);
+var restaurantAddNoteTPL = Template.restaurant_addNote;
 Template.restaurant_checkout.onRendered(function () {
-    createNewAlertify(["customer", "userStaff"]);
+    createNewAlertify(["customer", "userStaff", "addNote"]);
     $('#sale-date').datetimepicker({
         format: "MM/DD/YYYY hh:mm:ss A"
     });
@@ -20,6 +21,9 @@ Template.restaurant_checkout.onRendered(function () {
     }, 500);
 });
 Template.restaurant_checkout.helpers({
+    isEmptyString: function (note) {
+        return note == "" || note == null;
+    },
     compareTableId: function (id) {
         var sale = Restaurant.Collection.Sales.findOne(FlowRouter.getParam('saleId'));
         var tableId = Session.get('tableIdSession');
@@ -159,6 +163,9 @@ Template.restaurant_checkout.helpers({
     }
 });
 Template.restaurant_checkout.events({
+    'click .add-note': function () {
+        alertify.addNote(fa('pencil', 'Note'), renderTemplate(restaurantAddNoteTPL, this));
+    },
     'change #table-id': function (e) {
         var saleId = $('#sale-id').val();
         if (saleId == "") return;
@@ -366,6 +373,7 @@ function addOrUpdateProducts(branchId, saleId, product, saleObj) {
         saleDetailObj.amount = saleDetailObj.price;
         saleDetailObj.branchId = branchId;
         saleDetailObj.status = "Unsaved";
+        saleDetailObj.note = "";
         Meteor.call('insertSaleAndSaleDetail', saleObj, saleDetailObj, function (error, saleId) {
             if (saleId) {
                 // $('#product-barcode').val('');
@@ -397,6 +405,7 @@ function addOrUpdateProducts(branchId, saleId, product, saleObj) {
             saleDetailObj.amount = saleDetailObj.price;
             saleDetailObj.branchId = branchId;
             saleDetailObj.status = "Unsaved";
+            saleDetailObj.note = "";
             Meteor.call('insertSaleDetails', saleDetailObj, function (error, result) {
                 if (error) alertify.error(error.message);
             });

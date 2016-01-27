@@ -1,5 +1,4 @@
 Restaurant.Collection.Sales = new Mongo.Collection("restaurant_sales");
-/*
 Restaurant.Schema.Sales = new SimpleSchema({
     saleDate: {
         type: Date,
@@ -33,46 +32,24 @@ Restaurant.Schema.Sales = new SimpleSchema({
         type: String,
         label: "Phone"
     },
-    //tableId: {
-    //    type: String,
-    //    label: "Table"
-    //},
-    createdAt: {
-        type: Date,
-        label: "Created Date",
-        autoValue: function () {
-            if (this.isInsert)
-                return new Date;
-        },
-        denyUpdate: true,
-        optional: true
-    },
-    updatedAt: {
-        type: Date,
-        label: "Updated Date",
-        autoValue: function () {
-            return new Date();
-        },
-        optional: true
-    },
-    createdUserId: {
+    tableId: {
         type: String,
-        label: "Created by",
-        autoValue: function () {
-            if (this.isInsert)
-                return Meteor.user()._id;
-        },
-        denyUpdate: true,
-        optional: true
+        label: "Table"
     },
-    updatedUserId: {
-        type: String,
-        label: "Updated by",
-        autoValue: function () {
-            return Meteor.user()._id;
-        },
-        optional: true
+    branchId:{
+        type:String,
+        label:"Branch"
+    },
+    exchangeRateId:{
+        type:String,
+        label:"Exchange Rate"
+    },
+    owedAmount:{
+        type:Number,
+        label: "Owed Amount",
+        optional:true
     }
+
 });
 Restaurant.Collection.Sales.attachSchema(Restaurant.Schema.Sales);
-*/
+

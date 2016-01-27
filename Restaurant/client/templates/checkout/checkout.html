@@ -140,6 +140,11 @@
                                     <tr data-id="{{_id}}">
                                         <td align="left">
                                             {{_product.name}}({{_product._unit.name}})
+                                            {{#if isEmptyString note}}
+                                                <i class="fa fa-sticky-note-o add-note"></i>
+                                            {{else}}
+                                                <i class="fa fa-sticky-note add-note"></i>
+                                            {{/if}}
                                         </td>
                                         <td>{{price}}</td>
                                         <td>{{quantity}}</td>
