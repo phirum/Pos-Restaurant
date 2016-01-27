@@ -41,7 +41,7 @@ Meteor.methods({
         }
         params.branchId = {$in: branchIds};
         params.status = {$ne: "Unsaved"};
-        params.transactionType = "Sale";
+        //params.transactionType = "Sale";
         //params.status = "Owed";
         var sale = Restaurant.Collection.Sales.find(params);
 

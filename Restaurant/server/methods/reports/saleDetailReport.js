@@ -32,7 +32,7 @@ Meteor.methods({
         if (locationId != null && locationId != "") params.locationId = locationId;
         params.branchId = {$in: branchIds};
         params.status = {$ne: "Unsaved"};
-        params.transactionType = "Sale";
+       // params.transactionType = "Sale";
 
         var header = {};
         var branchNames = "";

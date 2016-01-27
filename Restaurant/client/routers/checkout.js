@@ -25,11 +25,11 @@ restaurantRoutes.route('/checkout/:saleId?', {
         var branchId = Session.get('currentBranch');
         this.register(
             'restaurant_sale',
-            Meteor.subscribe('restaurantSale', {branchId: branchId})
+            Meteor.subscribe('restaurantSale', {branchId: branchId,status:"Unsaved"})
         );
         this.register(
             'restaurant_saleDetail',
-            Meteor.subscribe('restaurantSaleDetail', {branchId: branchId})
+            Meteor.subscribe('restaurantSaleDetail', {branchId: branchId,status:"Unsaved"})
         );
         this.register(
             'restaurant_exchangeRate',
